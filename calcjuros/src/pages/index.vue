@@ -1,10 +1,8 @@
 <template>
-  <HelloWorld></HelloWorld>
-  <AppFooter></AppFooter>
+  <Calc></Calc>
 </template>
 
 <script setup>
 //
-import AppFooter from "@/components/AppFooter.vue";
-import HelloWorld from "@/components/HelloWorld.vue";
+import Calc from "@/components/Calc.vue";
 </script>

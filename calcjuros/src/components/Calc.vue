@@ -1,8 +1,10 @@
 <template>
   <v-container>
-    <v-card class="mx-auto my-8 pa-4" max-width="600">
-      <v-card-title class="text-h5">Interest Calculator</v-card-title>
-      <v-form @submit.prevent="calculateInterest">
+    <v-card class="mx-auto my-8 pa-4" max-width="700">
+      <v-card-title class="text-h4 text-center font-weight-bold">
+        Compound Interest Calculator
+      </v-card-title>
+      <v-form>
         <v-row>
           <v-col cols="12">
             <v-text-field
@@ -13,6 +15,7 @@
               outlined
               dense
               required
+              class="input-field"
             ></v-text-field>
           </v-col>
 
@@ -24,6 +27,7 @@
               prefix="R$"
               outlined
               dense
+              class="input-field"
             ></v-text-field>
           </v-col>
 
@@ -36,51 +40,35 @@
               outlined
               dense
               required
+              class="input-field"
             ></v-text-field>
           </v-col>
 
           <v-col cols="12">
             <v-text-field
-              label="Period (Number of Days/Months/Years)"
+              label="Period (in Years)"
               v-model="period"
               type="number"
               outlined
               dense
               required
+              class="input-field"
             ></v-text-field>
           </v-col>
 
-          <v-col cols="12">
-            <v-select
-              label="Select Interest Type"
-              v-model="interestType"
-              :items="['Simple Interest', 'Compound Interest']"
-              outlined
-              dense
-              required
-            ></v-select>
-          </v-col>
-
-          <v-col cols="12">
-            <v-select
-              label="Select Period"
-              v-model="periodType"
-              :items="['Day', 'Month', 'Year']"
-              outlined
-              dense
-              required
-            ></v-select>
-          </v-col>
-
-          <v-col cols="12" class="text-center mt-4">
-            <v-btn color="primary" type="submit" class="px-6" large>
-              Calculate
-            </v-btn>
-          </v-col>
-
-          <v-col cols="12" v-if="result !== null" class="text-center mt-4">
-            <v-alert type="info" class="text-h6">
-              The calculated interest is <strong>R$ {{ result }}</strong>.
+          <v-col cols="12" v-if="periodicResults.length > 0" class="text-center mt-4">
+            <v-alert type="success" class="result-alert">
+              <h4>Results for Compound Interest</h4>
+              <v-divider class="my-4"></v-divider>
+              <div v-for="(result, index) in periodicResults" :key="index" class="period-result">
+                <h5>Period {{ index + 1 }}</h5>
+                <p><strong>Principal:</strong> R$ {{ result.principal }}</p>
+                <p><strong>Recurring:</strong> R$ {{ result.recurring }}</p>
+                <p><strong>Sum of Recurring Until This Period:</strong> R$ {{ result.recurringSum }}</p>
+                <p><strong>Interest:</strong> R$ {{ result.interest }}</p>
+                <p><strong>Total Interest Up to This Period:</strong> R$ {{ result.totalInterest }}</p>
+                <p><strong>Total:</strong> R$ {{ result.total }}</p>
+              </div>
             </v-alert>
           </v-col>
         </v-row>
@@ -89,54 +77,103 @@
   </v-container>
 </template>
 
-<script setup>
-import {ref} from 'vue';
 
-const initialAmount = ref(0);
-const recurringAmount = ref(0);
-const interestRate = ref(0);
-const period = ref(0);
-const interestType = ref('Simple Interest');
-const periodType = ref('Year');
-const result = ref(null);
+<script setup>
+import {ref, watch} from 'vue';
+
+const initialAmount = ref(1000); // Initial value
+const recurringAmount = ref(100); // Initial value
+const interestRate = ref(5); // Initial value
+const period = ref(3); // Initial value in years
+const periodicResults = ref([]);
 
 const calculateInterest = () => {
-  // Ensure inputs are numeric
   const principal = parseFloat(initialAmount.value) || 0;
   const recurring = parseFloat(recurringAmount.value) || 0;
   const rate = parseFloat(interestRate.value) / 100 || 0;
-  let time = parseFloat(period.value) || 0;
+  let accumulatedPrincipal = principal;
+  let totalInterestSum = 0;
+  let recurringSum = 0;
 
-  // Adjust time based on period type
-  switch (periodType.value) {
-    case 'Day':
-      time /= 365;
-      break;
-    case 'Month':
-      time /= 12;
-      break;
-    case 'Year':
-      break;
-  }
+  periodicResults.value = [];
 
-  let total = 0;
-
-  if (interestType.value === 'Simple Interest') {
-    total = principal + (principal * rate * time);
-
-    if (recurring > 0) {
-      total += recurring * rate * time * (time + 1) / 2;
+  for (let i = 1; i <= period.value; i++) {
+    let interest = accumulatedPrincipal * rate;
+    totalInterestSum += interest;
+    if (i > 1) {
+      recurringSum += recurring;
+      accumulatedPrincipal += recurring;
     }
-  } else if (interestType.value === 'Compound Interest') {
-    total = principal * Math.pow(1 + rate, time);
 
-    if (recurring > 0) {
-      total += recurring * (Math.pow(1 + rate, time) - 1) / rate;
-    }
+    accumulatedPrincipal += interest;
+
+    periodicResults.value.push({
+      principal: (accumulatedPrincipal - interest - (i > 1 ? recurring : 0)).toFixed(2),
+      recurring: (i > 1 ? recurring : 0).toFixed(2),
+      recurringSum: recurringSum.toFixed(2),
+      interest: interest.toFixed(2),
+      totalInterest: totalInterestSum.toFixed(2),
+      total: accumulatedPrincipal.toFixed(2),
+    });
   }
-
-  // Ensure total is a number before calling toFixed
-  result.value = total && !isNaN(total) ? total.toFixed(2) : '0.00';
 };
+
+// Watch inputs and trigger calculation
+watch([initialAmount, recurringAmount, interestRate, period], calculateInterest, {immediate: true});
 </script>
+
+<style scoped>
+.input-field {
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.result-alert {
+  padding: 2rem;
+  border-radius: 12px;
+  background-color: #424242;
+  color: #ffffff;
+}
+
+.period-result {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid #616161;
+  border-radius: 8px;
+  background-color: #757575;
+}
+
+h4, h5 {
+  color: #ffca28;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+p {
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+  color: #ffffff;
+}
+
+/* Light Mode */
+@media (prefers-color-scheme: light) {
+  .result-alert {
+    background-color: #e3f2fd;
+    color: #212121;
+  }
+
+  .period-result {
+    background-color: #f5f5f5;
+    border: 1px solid #bdbdbd;
+  }
+
+  h4, h5 {
+    color: #1e88e5;
+  }
+
+  p {
+    color: #212121;
+  }
+}
+</style>
 

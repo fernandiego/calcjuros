@@ -57,14 +57,22 @@
           </v-col>
 
           <v-col cols="12" class="mt-4">
-            <apexchart type="bar" :options="chartOptions" :series="chartSeries"></apexchart>
+            <apexchart
+              type="bar"
+              :options="chartOptions"
+              :series="chartSeries"
+            ></apexchart>
           </v-col>
 
           <v-col cols="12" v-if="periodicResults.length > 0" class="text-center mt-4">
             <v-alert type="success" class="result-alert">
               <h1>Results for Compound Interest</h1>
               <v-divider class="my-4"></v-divider>
-              <div v-for="(result, index) in periodicResults" :key="index" class="period-result">
+              <div
+                v-for="(result, index) in periodicResults"
+                :key="index"
+                class="period-result"
+              >
                 <h2>Period {{ index + 1 }}</h2>
                 <p><strong>Principal:</strong> R$ {{ result.principal }}</p>
                 <p><strong>Recurring:</strong> R$ {{ result.recurring }}</p>
@@ -96,7 +104,7 @@ const chartOptions = ref({
     type: 'bar',
     height: 350,
     stacked: true,
-    background: '#ffffff' // Set the background to white
+    background: '#ffffff',
   },
   plotOptions: {
     bar: {
@@ -107,43 +115,43 @@ const chartOptions = ref({
     },
   },
   dataLabels: {
-    enabled: true,
-    formatter: (val) => `R$ ${val}`,
-    offsetY: -20,
-    style: {
-      fontSize: '12px',
-      colors: ['#000']
-    }
+    enabled: false, // Disable individual data labels on bars
   },
   xaxis: {
-    categories: []
+    categories: [],
   },
   yaxis: {
     title: {
-      text: 'R$ (Value)'
-    }
+      text: 'R$ (Value)',
+    },
   },
   fill: {
-    opacity: 1
+    opacity: 1,
   },
   tooltip: {
     y: {
-      formatter: (val, { seriesIndex, dataPointIndex }) => {
-        const principal = chartSeries.value[0].data[dataPointIndex];
-        const recurring = chartSeries.value[1].data[dataPointIndex];
-        const interest = chartSeries.value[2].data[dataPointIndex];
-        return `Principal: R$ ${principal}<br>Recurring: R$ ${recurring}<br>Interest: R$ ${interest}`;
-      }
+      formatter: (val, { dataPointIndex }) => {
+        const principal = parseFloat(chartSeries.value[0].data[dataPointIndex]).toFixed(2);
+        const recurringSum = parseFloat(chartSeries.value[1].data[dataPointIndex]).toFixed(2);
+        const totalInterestSum = parseFloat(chartSeries.value[2].data[dataPointIndex]).toFixed(2);
+        const totalForPeriod = (parseFloat(principal) + parseFloat(recurringSum) + parseFloat(totalInterestSum)).toFixed(2);
+
+        return `
+          Total for Period ${dataPointIndex + 1}: R$ ${totalForPeriod}<br>
+          Principal: R$ ${principal}<br>
+          Sum of Recurring: R$ ${recurringSum}<br>
+          Sum of Interest: R$ ${totalInterestSum}
+        `;
+      },
     },
     theme: 'dark',
     style: {
-      background: '#333', // Dark gray background for tooltip
-      color: '#fff', // White text color
-      fontSize: '12px'
-    }
-  }
+      background: '#333',
+      color: '#fff',
+      fontSize: '12px',
+    },
+  },
 });
-
 
 const chartSeries = ref([
   {
@@ -159,7 +167,6 @@ const chartSeries = ref([
     data: [],
   },
 ]);
-
 
 const calculateInterest = () => {
   const principal = parseFloat(initialAmount.value) || 0;
@@ -190,7 +197,7 @@ const calculateInterest = () => {
       principal: principal.toFixed(2),
       recurring: recurringSum.toFixed(2),
       recurringSum: recurringSum.toFixed(2),
-      interest: interest.toFixed(2),  // Interest for this period only
+      interest: interest.toFixed(2),
       totalInterest: totalInterestSum.toFixed(2),
       total: accumulatedPrincipal.toFixed(2),
     });
@@ -198,10 +205,9 @@ const calculateInterest = () => {
     chartOptions.value.xaxis.categories.push(`Period ${i}`);
     chartSeries.value[0].data.push(parseFloat(principal).toFixed(2));
     chartSeries.value[1].data.push(parseFloat(recurringSum).toFixed(2));
-    chartSeries.value[2].data.push(parseFloat(totalInterestSum).toFixed(2)); // Use totalInterestSum for display
+    chartSeries.value[2].data.push(parseFloat(totalInterestSum).toFixed(2));
   }
 };
-
 
 watch([initialAmount, recurringAmount, interestRate, period], calculateInterest, { immediate: true });
 </script>
@@ -209,7 +215,6 @@ watch([initialAmount, recurringAmount, interestRate, period], calculateInterest,
 <style scoped>
 .input-field {
   margin-bottom: 1rem;
-  color: #ffffff;
 }
 
 .result-alert {
@@ -236,7 +241,6 @@ h4, h5 {
 p {
   font-size: 1.1rem;
   margin: 0.5rem 0;
-  color: #ffffff;
 }
 
 /* Light Mode */

@@ -46,6 +46,7 @@ export default defineConfig({
       vueTemplate: true,
     }),
   ],
+  base: '/calcjuros/',
   define: { 'process.env': {} },
   resolve: {
     alias: {

@@ -46,7 +46,7 @@
 
           <v-col cols="12">
             <v-text-field
-              label="Period (in Years)"
+              label="Period (in Years or Months)"
               v-model="period"
               type="number"
               outlined
@@ -56,11 +56,23 @@
             ></v-text-field>
           </v-col>
 
+          <v-col cols="12" class="mt-4">
+            <apexchart
+              type="bar"
+              :options="chartOptions"
+              :series="chartSeries"
+            ></apexchart>
+          </v-col>
+
           <v-col cols="12" v-if="periodicResults.length > 0" class="text-center mt-4">
             <v-alert type="success" class="result-alert">
               <h1>Results for Compound Interest</h1>
               <v-divider class="my-4"></v-divider>
-              <div v-for="(result, index) in periodicResults" :key="index" class="period-result">
+              <div
+                v-for="(result, index) in periodicResults"
+                :key="index"
+                class="period-result"
+              >
                 <h2>Period {{ index + 1 }}</h2>
                 <p><strong>Principal:</strong> R$ {{ result.principal }}</p>
                 <p><strong>Recurring:</strong> R$ {{ result.recurring }}</p>
@@ -71,10 +83,6 @@
               </div>
             </v-alert>
           </v-col>
-
-          <v-col cols="12" class="mt-4">
-            <apexchart type="bar" :options="chartOptions" :series="chartSeries"></apexchart>
-          </v-col>
         </v-row>
       </v-form>
     </v-card>
@@ -82,22 +90,21 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import {ref, watch} from 'vue';
 import ApexCharts from 'vue3-apexcharts';
 
 const initialAmount = ref(1000);
 const recurringAmount = ref(100);
-const interestRate = ref(5);
-const period = ref(3);
+const interestRate = ref(10);
+const period = ref(10);
 const periodicResults = ref([]);
-
-
 
 const chartOptions = ref({
   chart: {
     type: 'bar',
     height: 350,
-    stacked: true
+    stacked: true,
+    background: '#ffffff',
   },
   plotOptions: {
     bar: {
@@ -108,45 +115,57 @@ const chartOptions = ref({
     },
   },
   dataLabels: {
-    enabled: true,
-    formatter: (val) => `R$ ${val}`,
-    offsetY: -20,
-    style: {
-      fontSize: '12px',
-      colors: ['#000']
-    }
+    enabled: false, // Disable individual data labels on bars
   },
   xaxis: {
-    categories: []
+    categories: [],
   },
   yaxis: {
     title: {
-      text: 'R$ (Value)'
-    }
+      text: 'R$ (Value)',
+    },
   },
   fill: {
-    opacity: 1
+    opacity: 1,
   },
   tooltip: {
     y: {
-      formatter: (val) => `R$ ${val}`
-    }
-  }
+      formatter: (val, {dataPointIndex}) => {
+        const principal = parseFloat(chartSeries.value[0].data[dataPointIndex]).toFixed(2);
+        const recurringSum = parseFloat(chartSeries.value[1].data[dataPointIndex]).toFixed(2);
+        const totalInterestSum = parseFloat(chartSeries.value[2].data[dataPointIndex]).toFixed(2);
+        const totalForPeriod = (parseFloat(principal) + parseFloat(recurringSum) + parseFloat(totalInterestSum)).toFixed(2);
+
+        return `
+          Total for Period ${dataPointIndex + 1}: R$ ${totalForPeriod}<br>
+          Principal: R$ ${principal}<br>
+          Sum of Recurring: R$ ${recurringSum}<br>
+          Sum of Interest: R$ ${totalInterestSum}
+        `;
+      },
+    },
+    theme: 'dark',
+    style: {
+      background: '#333',
+      color: '#fff',
+      fontSize: '12px',
+    },
+  },
 });
 
 const chartSeries = ref([
   {
     name: 'Principal',
-    data: []
+    data: [],
   },
   {
     name: 'Recurring',
-    data: []
+    data: [],
   },
   {
     name: 'Interest',
-    data: []
-  }
+    data: [],
+  },
 ]);
 
 const calculateInterest = () => {
@@ -159,13 +178,14 @@ const calculateInterest = () => {
 
   periodicResults.value = [];
   chartOptions.value.xaxis.categories = [];
-  chartSeries.value[0].data = [];
-  chartSeries.value[1].data = [];
-  chartSeries.value[2].data = [];
+  chartSeries.value[0].data = []; // For Principal
+  chartSeries.value[1].data = []; // For Recurring
+  chartSeries.value[2].data = []; // For Interest
 
   for (let i = 1; i <= period.value; i++) {
     let interest = accumulatedPrincipal * rate;
     totalInterestSum += interest;
+
     if (i > 1) {
       recurringSum += recurring;
       accumulatedPrincipal += recurring;
@@ -174,28 +194,33 @@ const calculateInterest = () => {
     accumulatedPrincipal += interest;
 
     periodicResults.value.push({
-      principal: (accumulatedPrincipal - interest - (i > 1 ? recurring : 0)).toFixed(2),
-      recurring: (i > 1 ? recurring : 0).toFixed(2),
+      principal: principal.toFixed(2),
+      recurring: recurringSum.toFixed(2),
       recurringSum: recurringSum.toFixed(2),
       interest: interest.toFixed(2),
       totalInterest: totalInterestSum.toFixed(2),
       total: accumulatedPrincipal.toFixed(2),
     });
 
-    chartOptions.value.xaxis.categories.push(`Period ${i}`);
-    chartSeries.value[0].data.push(parseFloat(accumulatedPrincipal - interest - (i > 1 ? recurring : 0)).toFixed(2));
-    chartSeries.value[1].data.push(parseFloat(i > 1 ? recurring : 0).toFixed(2));
-    chartSeries.value[2].data.push(parseFloat(interest).toFixed(2));
+    console.log(i)
+
+    chartOptions.value.xaxis.categories.push(i.toString());
+    chartSeries.value[0].data.push(parseFloat(principal).toFixed(2));
+    chartSeries.value[1].data.push(parseFloat(recurringSum).toFixed(2));
+    chartSeries.value[2].data.push(parseFloat(totalInterestSum).toFixed(2));
+    console.log(`Period ${i}: Principal=${principal}, RecurringSum=${recurringSum}, TotalInterest=${totalInterestSum}`); // Debug log
   }
+
+  console.log('X-axis categories:', chartOptions.value.xaxis.categories); // Debug log
+  chartOptions.value = {...chartOptions.value};
 };
 
-watch([initialAmount, recurringAmount, interestRate, period], calculateInterest, { immediate: true });
+watch([initialAmount, recurringAmount, interestRate, period], calculateInterest, {immediate: true});
 </script>
 
 <style scoped>
 .input-field {
   margin-bottom: 1rem;
-  color: #ffffff;
 }
 
 .result-alert {
@@ -222,7 +247,6 @@ h4, h5 {
 p {
   font-size: 1.1rem;
   margin: 0.5rem 0;
-  color: #ffffff;
 }
 
 /* Light Mode */

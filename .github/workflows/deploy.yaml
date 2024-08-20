@@ -16,15 +16,24 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' # or the version you use in your project
+          node-version: '20' # Updated to Node.js 20
 
       - name: Install dependencies
         run: npm install
 
-
       - name: Build the project
         run: npm run build
 
+      - name: Reconfigure Git to use HTTPS
+        run: |
+          git remote set-url origin https://github.com/fernandiego/calcjuros.git
+
+      - name: Clear Git History
+        run: |
+          rm -rf .git
+          git init
+          git remote add origin https://github.com/fernandiego/calcjuros.git
+          git fetch
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

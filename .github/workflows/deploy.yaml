@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - main  # This triggers the workflow on pushes to the 'main' branch
 
 jobs:
   build-and-deploy:
@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' # Updated to Node.js 20
+          node-version: '20' # Use Node.js 20
 
       - name: Install dependencies
         run: npm install
@@ -24,19 +24,9 @@ jobs:
       - name: Build the project
         run: npm run build
 
-      - name: Reconfigure Git to use HTTPS
-        run: |
-          git remote set-url origin https://github.com/fernandiego/calcjuros.git
-
-      - name: Clear Git History
-        run: |
-          rm -rf .git
-          git init
-          git remote add origin https://github.com/fernandiego/calcjuros.git
-          git fetch
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          cname: '' # Add this if you're using a custom domain

@@ -6,7 +6,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist --user-name='fox' --user-email='fernandodiego.sn@gmail.com' --repo=https://github.com/fernandiego/calcjuros.git"
   },
   "dependencies": {
     "@mdi/font": "7.4.47",

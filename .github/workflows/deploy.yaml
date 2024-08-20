@@ -24,12 +24,5 @@ jobs:
       - name: Build the project
         run: npm run build
 
-      - name: Set up Git
-        run: |
-          git config --global user.email "fernandodiego.sn@gmail.com"
-          git config --global user.name "Fox"
-
       - name: Deploy to GitHub Pages
         run: npm run deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

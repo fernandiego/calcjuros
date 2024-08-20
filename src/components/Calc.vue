@@ -73,7 +73,7 @@
                 :key="index"
                 class="period-result"
               >
-                <h2>Period {{ index + 1 }}</h2>
+                <h2>Período {{ index + 1 }}</h2>
                 <p><strong>Principal:</strong> R$ {{ result.principal }}</p>
                 <p><strong>Soma dos aportes /Sum of Recurring:</strong> R$ {{ result.recurringSum }}</p>
                 <p><strong>Juros / Interest:</strong> R$ {{ result.interest }}</p>

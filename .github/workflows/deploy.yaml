@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -16,13 +16,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' # or your desired version
+          node-version: '20' # or the version you use in your project
 
       - name: Install dependencies
         run: npm install
 
       - name: Build the project
         run: npm run build
+
+      - name: Set up Git
+        run: |
+          git config --global user.email "fernandodiego.sn@gmail.com"
+          git config --global user.name "Fox"
 
       - name: Deploy to GitHub Pages
         run: npm run deploy

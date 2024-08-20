@@ -8,7 +8,7 @@
         <v-row>
           <v-col cols="12">
             <v-text-field
-              label="Initial Amount"
+              label="Valor inicial / Initial Amount"
               v-model="initialAmount"
               type="number"
               prefix="R$"
@@ -21,7 +21,7 @@
 
           <v-col cols="12">
             <v-text-field
-              label="Recurring Amount"
+              label="Aporte recorrente / Recurring Amount"
               v-model="recurringAmount"
               type="number"
               prefix="R$"
@@ -33,7 +33,7 @@
 
           <v-col cols="12">
             <v-text-field
-              label="Interest Rate (%)"
+              label="Taxa de Juros / Interest Rate (%)"
               v-model="interestRate"
               type="number"
               suffix="%"
@@ -46,7 +46,7 @@
 
           <v-col cols="12">
             <v-text-field
-              label="Period (in Years or Months)"
+              label="Periodo / Period (Meses ou Anos / Months or Years)"
               v-model="period"
               type="number"
               outlined
@@ -66,7 +66,7 @@
 
           <v-col cols="12" v-if="periodicResults.length > 0" class="text-center mt-4">
             <v-alert type="success" class="result-alert">
-              <h1>Results for Compound Interest</h1>
+              <h1>Resultado / Results</h1>
               <v-divider class="my-4"></v-divider>
               <div
                 v-for="(result, index) in periodicResults"
@@ -75,10 +75,9 @@
               >
                 <h2>Period {{ index + 1 }}</h2>
                 <p><strong>Principal:</strong> R$ {{ result.principal }}</p>
-                <p><strong>Recurring:</strong> R$ {{ result.recurring }}</p>
-                <p><strong>Sum of Recurring Until This Period:</strong> R$ {{ result.recurringSum }}</p>
-                <p><strong>Interest:</strong> R$ {{ result.interest }}</p>
-                <p><strong>Total Interest Up to This Period:</strong> R$ {{ result.totalInterest }}</p>
+                <p><strong>Soma dos aportes /Sum of Recurring:</strong> R$ {{ result.recurringSum }}</p>
+                <p><strong>Juros / Interest:</strong> R$ {{ result.interest }}</p>
+                <p><strong>Total de Juros / Total Interest:</strong> R$ {{ result.totalInterest }}</p>
                 <p><strong>Total:</strong> R$ {{ result.total }}</p>
               </div>
             </v-alert>

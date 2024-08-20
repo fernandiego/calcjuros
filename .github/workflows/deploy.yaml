@@ -18,15 +18,6 @@ jobs:
         with:
           node-version: '20' # or the version you use in your project
 
-      - name: Clean up cached git credentials
-  run: |
-    rm -rf .git
-    git init
-    git remote add origin https://github.com/${{ fernandiego/calcjuros }}.git
-    git fetch
-
-
-
       - name: Install dependencies
         run: npm install
 

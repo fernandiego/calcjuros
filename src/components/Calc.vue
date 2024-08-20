@@ -94,7 +94,7 @@ import ApexCharts from 'vue3-apexcharts';
 
 const initialAmount = ref(1000);
 const recurringAmount = ref(100);
-const interestRate = ref(7);
+const interestRate = ref(10);
 const period = ref(10);
 const periodicResults = ref([]);
 

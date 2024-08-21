@@ -69,13 +69,13 @@
               <h1>Resultado / Results</h1>
               <v-divider class="my-4"></v-divider>
               <div
-                v-for="(result, index) in periodicResults"
+                v-for="(result, index) in [...periodicResults].reverse()"
                 :key="index"
                 class="period-result"
               >
-                <h2>Período {{ index + 1 }}</h2>
+                <h2>Período {{  periodicResults.length - index }}</h2>
                 <p><strong>Principal:</strong> R$ {{ result.principal }}</p>
-                <p><strong>Soma dos aportes /Sum of Recurring:</strong> R$ {{ result.recurringSum }}</p>
+                <p><strong>Soma dos aportes / Sum of Recurring:</strong> R$ {{ result.recurringSum }}</p>
                 <p><strong>Juros / Interest:</strong> R$ {{ result.interest }}</p>
                 <p><strong>Total de Juros / Total Interest:</strong> R$ {{ result.totalInterest }}</p>
                 <p><strong>Total:</strong> R$ {{ result.total }}</p>
@@ -207,10 +207,8 @@ const calculateInterest = () => {
     chartSeries.value[0].data.push(parseFloat(principal).toFixed(2));
     chartSeries.value[1].data.push(parseFloat(recurringSum).toFixed(2));
     chartSeries.value[2].data.push(parseFloat(totalInterestSum).toFixed(2));
-    console.log(`Period ${i}: Principal=${principal}, RecurringSum=${recurringSum}, TotalInterest=${totalInterestSum}`); // Debug log
   }
 
-  console.log('X-axis categories:', chartOptions.value.xaxis.categories); // Debug log
   chartOptions.value = {...chartOptions.value};
 };
 

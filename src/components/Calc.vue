@@ -65,7 +65,7 @@
           </v-col>
 
           <v-col cols="12" v-if="periodicResults.length > 0" class="text-center mt-4">
-            <v-alert type="success" class="result-alert">
+            <v-alert class="result-alert">
               <h1>Resultado / Results</h1>
               <v-divider class="my-4"></v-divider>
               <div
@@ -74,11 +74,11 @@
                 class="period-result"
               >
                 <h2>Período {{  periodicResults.length - index }}</h2>
-                <p><strong>Principal:</strong> R$ {{ result.principal }}</p>
-                <p><strong>Soma dos aportes / Sum of Recurring:</strong> R$ {{ result.recurringSum }}</p>
-                <p><strong>Juros / Interest:</strong> R$ {{ result.interest }}</p>
-                <p><strong>Total de Juros / Total Interest:</strong> R$ {{ result.totalInterest }}</p>
-                <p><strong>Total:</strong> R$ {{ result.total }}</p>
+                <p class="initial"><strong>Valor inicial / Initial amount:</strong> R$ {{ result.principal }}</p>
+                <p class="aportes"><strong>Soma dos aportes / Sum of Recurring:</strong> R$ {{ result.recurringSum }}</p>
+                <p class="juros"><strong>Juros / Interest:</strong> R$ {{ result.interest }}</p>
+                <p class="juros"><strong>Total de Juros / Total Interest:</strong> R$ {{ result.totalInterest }}</p>
+                <p class="total"><strong>Total:</strong> R$ {{ result.total }}</p>
               </div>
             </v-alert>
           </v-col>
@@ -266,4 +266,31 @@ p {
     color: #212121;
   }
 }
+.initial {
+   color: rgba(0,143,251,1);
+
+  }
+.juros {
+   color: rgba(254,176,25,1) ;
+
+  }
+.total {
+  color: #006400; /* Dark green color like a dollar bill */
+  text-align: center;
+  animation: glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 1px #006400, 0 0 5px #006400, 0 0 5px #006400;
+  }
+
+  to {
+    text-shadow: 0 0 2px #008000, 0 0 10px #008000, 0 0 10px #008000;
+  }
+}
+
+.aportes {
+   color: rgba(0,227,150,1) ;
+  }
 </style>

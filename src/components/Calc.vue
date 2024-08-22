@@ -73,9 +73,10 @@
                 :key="index"
                 class="period-result"
               >
-                <h2>Período {{  periodicResults.length - index }}</h2>
+                <h2>Período {{ periodicResults.length - index }}</h2>
                 <p class="initial"><strong>Valor inicial / Initial amount:</strong> R$ {{ result.principal }}</p>
-                <p class="aportes"><strong>Soma dos aportes / Sum of Recurring:</strong> R$ {{ result.recurringSum }}</p>
+                <p class="aportes"><strong>Soma dos aportes / Sum of Recurring:</strong> R$ {{ result.recurringSum }}
+                </p>
                 <p class="juros"><strong>Juros / Interest:</strong> R$ {{ result.interest }}</p>
                 <p class="juros"><strong>Total de Juros / Total Interest:</strong> R$ {{ result.totalInterest }}</p>
                 <p class="total"><strong>Total:</strong> R$ {{ result.total }}</p>
@@ -193,12 +194,11 @@ const calculateInterest = () => {
     accumulatedPrincipal += interest;
 
     periodicResults.value.push({
-      principal: principal.toFixed(2),
-      recurring: recurringSum.toFixed(2),
-      recurringSum: recurringSum.toFixed(2),
-      interest: interest.toFixed(2),
-      totalInterest: totalInterestSum.toFixed(2),
-      total: accumulatedPrincipal.toFixed(2),
+      principal: principal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+      recurringSum: recurringSum.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+      interest: interest.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+      totalInterest: totalInterestSum.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+      total: accumulatedPrincipal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
     });
 
     console.log(i)
@@ -266,14 +266,17 @@ p {
     color: #212121;
   }
 }
+
 .initial {
-   color: rgba(0,143,251,1);
+  color: rgba(0, 143, 251, 1);
 
-  }
+}
+
 .juros {
-   color: rgba(254,176,25,1) ;
+  color: rgba(254, 176, 25, 1);
 
-  }
+}
+
 .total {
   color: #006400; /* Dark green color like a dollar bill */
   text-align: center;
@@ -291,6 +294,6 @@ p {
 }
 
 .aportes {
-   color: rgba(0,227,150,1) ;
-  }
+  color: rgba(0, 227, 150, 1);
+}
 </style>
